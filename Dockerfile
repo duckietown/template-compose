@@ -20,12 +20,6 @@ COPY ./dependencies-apt.txt /tmp/
 COPY ./dependencies-py3.txt /tmp/
 COPY ./dependencies-compose.txt /tmp/
 
-# install pip3
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    python3-pip \
-  && rm -rf /var/lib/apt/lists/*
-
 # install apt dependencies
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
