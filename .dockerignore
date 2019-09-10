@@ -1,0 +1,12 @@
+# Ignore everything
+**
+
+# Allow files and directories
+!assets
+!dependencies-apt.txt
+!dependencies-py3.txt
+!dependencies-compose.txt
+!launch.sh
+
+# YOUR FILES LISTED BELOW THIS LINE (IMPORTANT: PREPEND !)
+# ----------------------------------------------------------------------------
