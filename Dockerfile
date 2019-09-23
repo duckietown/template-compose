@@ -17,8 +17,6 @@ ENV DASHBOARD_NAME="${DASHBOARD_NAME}"
 
 # copy dependencies files only
 COPY ./dependencies-apt.txt /tmp/
-COPY ./dependencies-py3.txt /tmp/
-COPY ./dependencies-compose.txt /tmp/
 
 # install apt dependencies
 RUN apt-get update \
@@ -26,8 +24,14 @@ RUN apt-get update \
     $(awk -F: '/^[^#]/ { print $1 }' /tmp/dependencies-apt.txt | uniq) \
   && rm -rf /var/lib/apt/lists/*
 
+# copy dependencies files only
+COPY ./dependencies-py3.txt /tmp/
+
 # install python dependencies
 RUN pip3 install -r /tmp/dependencies-py3.txt
+
+# copy dependencies files only
+COPY ./dependencies-compose.txt /tmp/
 
 # install compose dependencies
 RUN python3 ${COMPOSE_DIR}/public_html/system/lib/python/compose/package_manager.py \
