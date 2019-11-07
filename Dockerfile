@@ -12,7 +12,7 @@ ARG BASE_TAG=${MAJOR}-${ARCH}
 FROM afdaniele/${BASE_IMAGE}:${BASE_TAG}
 
 # setup environment
-ARG DT_DASHBOARD_NAME
+ARG DASHBOARD_NAME
 ENV DT_DASHBOARD_NAME="${DASHBOARD_NAME}"
 
 # copy dependencies files only
