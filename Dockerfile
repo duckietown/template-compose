@@ -5,15 +5,15 @@ ARG DASHBOARD_NAME="<DASHBOARD_NAME_HERE>"
 # ==> Do not change this code
 ARG ARCH=arm32v7
 ARG MAJOR=latest
-ARG BASE_TAG=${MAJOR}
-ARG BASE_IMAGE=compose-${ARCH}
+ARG BASE_IMAGE=compose
+ARG BASE_TAG=${MAJOR}-${ARCH}
 
 # define base image
 FROM afdaniele/${BASE_IMAGE}:${BASE_TAG}
 
 # setup environment
-ARG DASHBOARD_NAME
-ENV DASHBOARD_NAME="${DASHBOARD_NAME}"
+ARG DT_DASHBOARD_NAME
+ENV DT_DASHBOARD_NAME="${DASHBOARD_NAME}"
 
 # copy dependencies files only
 COPY ./dependencies-apt.txt /tmp/
