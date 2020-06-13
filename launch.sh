@@ -1,6 +1,9 @@
 #!/bin/bash
 
-set -e
+source /environment.sh
+
+# initialize launch file
+dt-launchfile-init
 
 # YOUR CODE BELOW THIS LINE
 # ----------------------------------------------------------------------------
@@ -11,4 +14,7 @@ set -e
 # YOUR CODE ABOVE THIS LINE
 
 # run base entrypoint
-/entrypoint.sh
+dt-exec /entrypoint.sh
+
+# terminate launch file
+dt-launchfile-join
