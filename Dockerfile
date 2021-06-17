@@ -37,6 +37,10 @@ RUN apt-get update \
 COPY ./dependencies-py3.txt /tmp/
 
 # install python dependencies
+ARG PIP_INDEX_URL
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
+RUN echo PIP_INDEX_URL=${PIP_INDEX_URL}
+
 RUN pip3 install -r /tmp/dependencies-py3.txt
 
 # copy dependencies files only
