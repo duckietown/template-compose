@@ -4,7 +4,7 @@ ARG MAINTAINER="<YOUR_FULL_NAME> (<YOUR_EMAIL_ADDRESS>)"
 
 # ==================================================>
 # ==> Do not change this code
-ARG ARCH=arm32v7
+ARG ARCH=arm64v8
 ARG COMPOSE_VERSION=latest
 ARG BASE_IMAGE=compose
 ARG BASE_TAG=${COMPOSE_VERSION}-${ARCH}
