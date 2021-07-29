@@ -7,7 +7,7 @@ ARG ICON="cube"
 
 # ==================================================>
 # ==> Do not change this code
-ARG ARCH=arm32v7
+ARG ARCH=arm64v8
 ARG COMPOSE_VERSION=v1.0.4
 ARG BASE_IMAGE=compose
 ARG BASE_TAG=${COMPOSE_VERSION}-${ARCH}
@@ -15,7 +15,7 @@ ARG LAUNCHER=default
 
 # extend dt-commons
 ARG SUPER_IMAGE=dt-commons
-ARG DISTRO=daffy
+ARG DISTRO=ente
 ARG SUPER_IMAGE_TAG=${DISTRO}-${ARCH}
 FROM duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
 
