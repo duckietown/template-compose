@@ -4,14 +4,14 @@ ARG MAINTAINER="<YOUR_FULL_NAME> (<YOUR_EMAIL_ADDRESS>)"
 
 # ==================================================>
 # ==> Do not change this code
-ARG ARCH=arm32v7
+ARG ARCH=arm64v8
 ARG COMPOSE_VERSION=latest
 ARG BASE_IMAGE=compose
 ARG BASE_TAG=${COMPOSE_VERSION}-${ARCH}
 
 # extend dt-commons
 ARG SUPER_IMAGE=dt-commons
-ARG MAJOR=daffy
+ARG MAJOR=ente
 ARG SUPER_IMAGE_TAG=${MAJOR}-${ARCH}
 ARG DOCKER_REGISTRY=docker.io
 FROM ${DOCKER_REGISTRY}/duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
