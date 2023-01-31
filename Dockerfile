@@ -17,7 +17,8 @@ ARG LAUNCHER=default
 ARG SUPER_IMAGE=dt-commons
 ARG DISTRO=ente
 ARG SUPER_IMAGE_TAG=${DISTRO}-${ARCH}
-FROM duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
+ARG DOCKER_REGISTRY=docker.io
+FROM ${DOCKER_REGISTRY}/duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
 
 # define base image
 FROM afdaniele/${BASE_IMAGE}:${BASE_TAG}
@@ -67,8 +68,10 @@ COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
 # install python3 dependencies
+ARG PIP_INDEX_URL="https://pypi.org/simple"
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN pip3 install --use-feature=2020-resolver -r ${REPO_PATH}/dependencies-py3.txt
+RUN dt-pip3-install ${REPO_PATH}/dependencies-py3.txt
 
 # copy dependencies files only
 COPY ./dependencies-compose.txt "${REPO_PATH}/"
