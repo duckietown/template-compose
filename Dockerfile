@@ -7,15 +7,15 @@ ARG ICON="cube"
 
 # ==================================================>
 # ==> Do not change this code
-ARG ARCH=arm64v8
-ARG COMPOSE_VERSION=v1.0.4
+ARG ARCH=arm32v7
+ARG COMPOSE_VERSION=v1.1.6
 ARG BASE_IMAGE=compose
 ARG BASE_TAG=${COMPOSE_VERSION}-${ARCH}
 ARG LAUNCHER=default
 
 # extend dt-commons
 ARG SUPER_IMAGE=dt-commons
-ARG DISTRO=ente
+ARG DISTRO=daffy
 ARG SUPER_IMAGE_TAG=${DISTRO}-${ARCH}
 ARG DOCKER_REGISTRY=docker.io
 FROM ${DOCKER_REGISTRY}/duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
@@ -46,9 +46,11 @@ ARG LAUNCHER
 # check build arguments
 RUN dt-build-env-check "${REPO_NAME}" "${MAINTAINER}" "${DESCRIPTION}"
 
+# code environment
+ENV SOURCE_DIR /code
+ENV LAUNCH_DIR /launch
+
 # define/create repository path
-ARG SOURCE_DIR="/code"
-ARG LAUNCH_DIR="/launch"
 ARG REPO_PATH="${SOURCE_DIR}/${REPO_NAME}"
 ARG LAUNCH_PATH="${LAUNCH_DIR}/${REPO_NAME}"
 RUN mkdir -p "${REPO_PATH}"
@@ -63,15 +65,17 @@ ENV DT_REPO_PATH "${REPO_PATH}"
 ENV DT_LAUNCH_PATH "${LAUNCH_PATH}"
 ENV DT_LAUNCHER "${LAUNCHER}"
 
+# configure HTTP port
+ENV HTTP_PORT 8080
+
 # install apt dependencies
 COPY ./dependencies-apt.txt "${REPO_PATH}/"
 RUN dt-apt-install ${REPO_PATH}/dependencies-apt.txt
 
 # install python3 dependencies
-ARG PIP_INDEX_URL="https://pypi.org/simple"
-ENV PIP_INDEX_URL=${PIP_INDEX_URL}
-COPY ./dependencies-py3.txt "${REPO_PATH}/"
-RUN dt-pip3-install ${REPO_PATH}/dependencies-py3.txt
+COPY ./dependencies-py3.* "${REPO_PATH}/"
+# TODO: we cannot use the .resolved file because pip is too old on python3.5 (upgrade compose env)
+RUN dt-pip3-install "${REPO_PATH}/dependencies-py3.txt"
 
 # copy dependencies files only
 COPY ./dependencies-compose.txt "${REPO_PATH}/"
@@ -110,8 +114,14 @@ LABEL org.duckietown.label.module.type="${REPO_NAME}" \
 # <== Do not change this code
 # <==================================================
 
+# switch to simple user
+USER www-data
+
 # configure \compose\
 RUN python3 ${COMPOSE_DIR}/configure.py \
   # --<KEY_1> <VALUE_1> \
   # --<KEY_2> <VALUE_2> \
   # ...
+
+# switch back to root
+USER root
