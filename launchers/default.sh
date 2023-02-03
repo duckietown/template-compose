@@ -8,13 +8,13 @@ dt-launchfile-init
 # YOUR CODE BELOW THIS LINE
 # ----------------------------------------------------------------------------
 
-
+# Configure your project here
 
 # ----------------------------------------------------------------------------
 # YOUR CODE ABOVE THIS LINE
 
-# run base entrypoint
-dt-exec /entrypoint.sh
+# run compose entrypoint
+dt-exec /compose-entrypoint.sh
 
-# terminate launch file
+# wait for app to end
 dt-launchfile-join
