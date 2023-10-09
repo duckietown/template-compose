@@ -12,17 +12,17 @@ ARG ARCH
 ARG DISTRO
 ARG DOCKER_REGISTRY
 ARG BASE_REPOSITORY
-ARG BASE_ORGANIZATION=duckietown
+ARG BASE_ORGANIZATION
 ARG COMPOSE_VERSION=v1.2.1
 ARG BASE_TAG=${COMPOSE_VERSION}-${ARCH}
 ARG LAUNCHER=default
 
 # extend dt-commons
+ARG SUPER_ORGANIZATION=duckietown
 ARG SUPER_IMAGE=dt-commons
-ARG DISTRO=daffy
 ARG SUPER_IMAGE_TAG=${DISTRO}-${ARCH}
 ARG DOCKER_REGISTRY=docker.io
-FROM ${DOCKER_REGISTRY}/duckietown/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
+FROM ${DOCKER_REGISTRY}/${SUPER_ORGANIZATION}/${SUPER_IMAGE}:${SUPER_IMAGE_TAG} as dt-commons
 
 # define base image
 FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} as base
@@ -104,14 +104,12 @@ RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 USER www-data
 
 # install compose dependencies
+COPY ./dependencies-compose.txt "${PROJECT_PATH}/"
 RUN python3 ${COMPOSE_DIR}/public_html/system/lib/python/compose/package_manager.py \
   --install $(awk -F: '/^[^#]/ { print $1 }' ${PROJECT_PATH}/dependencies-compose.txt | uniq)
 
 # switch back to root
 USER root
-
-# copy the source code
-COPY ./packages "${PROJECT_PATH}/packages"
 
 # install launcher scripts
 COPY ./launchers/. "${PROJECT_LAUNCHERS_PATH}/"
