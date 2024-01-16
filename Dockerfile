@@ -8,15 +8,6 @@ ARG PROJECT_FORMAT_VERSION
 
 # ==================================================>
 # ==> Do not change the code below this line
-
-# compose version
-ARG COMPOSE_VERSION=v1.3.3
-ARG COMPOSE_REGISTRY=docker.io
-ARG COMPOSE_ORGANIZATION=afdaniele
-ARG COMPOSE_REPOSITORY=compose
-ARG COMPOSE_TAG=${COMPOSE_VERSION}-${ARCH}
-
-# arguments
 ARG ARCH
 ARG DISTRO
 ARG DOCKER_REGISTRY
@@ -26,10 +17,7 @@ ARG BASE_TAG=${DISTRO}-${ARCH}
 ARG LAUNCHER=default
 
 # define base image
-FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} as super
-
-# inject compose image
-FROM ${COMPOSE_REGISTRY}/${COMPOSE_ORGANIZATION}/${COMPOSE_REPOSITORY}:${COMPOSE_TAG} as compose
+FROM ${DOCKER_REGISTRY}/${BASE_ORGANIZATION}/${BASE_REPOSITORY}:${BASE_TAG} as base
 
 # recall all arguments
 ARG ARCH
@@ -50,15 +38,6 @@ ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
 
-# move compose entrypoint
-RUN cp /entrypoint.sh /compose-entrypoint.sh
-
-# copy stuff from the super image
-COPY --from=super /entrypoint.sh /entrypoint.sh
-COPY --from=super /environment.sh /environment.sh
-COPY --from=super /usr/local/bin/dt-* /usr/local/bin/
-COPY --from=super /code/src/dt-commons /code/src/dt-commons
-
 # check build arguments
 RUN dt-args-check \
     "PROJECT_NAME" "${PROJECT_NAME}" \
@@ -69,29 +48,8 @@ RUN dt-args-check \
     "ARCH" "${ARCH}" \
     "DISTRO" "${DISTRO}" \
     "DOCKER_REGISTRY" "${DOCKER_REGISTRY}" \
-    "BASE_REPOSITORY" "${BASE_REPOSITORY}"
-
-# setup environment
-ENV INITSYSTEM="off" \
-    TERM="xterm" \
-    LANG="C.UTF-8" \
-    LC_ALL="C.UTF-8" \
-    READTHEDOCS="True" \
-    PYTHONIOENCODING="UTF-8" \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED="1" \
-    DEBIAN_FRONTEND="noninteractive" \
-    DISABLE_CONTRACTS=1 \
-    QEMU_EXECVE=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_ROOT_USER_ACTION=ignore
-
-# code environment
-ENV SOURCE_DIR="/code/src" \
-    LAUNCHERS_DIR="/launch"
-
-# compose environment
-ENV HTTP_PORT 8080
+    "BASE_REPOSITORY" "${BASE_REPOSITORY}" \
+    && dt-check-project-format "${PROJECT_FORMAT_VERSION}"
 
 # define/create repository path
 ARG PROJECT_PATH="${SOURCE_DIR}/${PROJECT_NAME}"
@@ -118,15 +76,13 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 COPY ./dependencies-py3.* "${PROJECT_PATH}/"
 RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 
-# copy dependencies files only
-COPY ./dependencies-compose.txt "${REPO_PATH}/"
-
 # switch to simple user
 USER www-data
 
 # install compose dependencies
+COPY ./dependencies-compose.txt "${PROJECT_PATH}/"
 RUN python3 ${COMPOSE_DIR}/public_html/system/lib/python/compose/package_manager.py \
-  --install $(awk -F: '/^[^#]/ { print $1 }' ${REPO_PATH}/dependencies-compose.txt | uniq)
+  --install $(awk -F: '/^[^#]/ { print $1 }' ${PROJECT_PATH}/dependencies-compose.txt | uniq)
 
 # switch back to root
 USER root
@@ -141,9 +97,6 @@ RUN dt-install-launchers "${PROJECT_LAUNCHERS_PATH}"
 # install scripts
 COPY ./assets/entrypoint.d "${PROJECT_PATH}/assets/entrypoint.d"
 COPY ./assets/environment.d "${PROJECT_PATH}/assets/environment.d"
-
-# reset the entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
 
 # define default command
 CMD ["bash", "-c", "dt-launcher-${DT_LAUNCHER}"]
@@ -178,7 +131,7 @@ LABEL \
 USER www-data
 
 # configure \compose\
-RUN python3 ${COMPOSE_DIR}/configure.py \
+#RUN python3 ${COMPOSE_DIR}/configure.py \
   # --<KEY_1> <VALUE_1> \
   # --<KEY_2> <VALUE_2> \
   # ...

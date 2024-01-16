@@ -1,10 +1,7 @@
-# Template: template-basic
+# Template: template-compose
 
-This template provides a boilerplate repository for developing non-ROS software
-in Duckietown.
-
-**NOTE:** If you want to develop software that uses ROS, check out
-[this template](https://github.com/duckietown/template-ros).
+This template provides a boilerplate repository for developing browser-based dashboards based on 
+[\compose\](https://github.com/afdaniele/compose).
 
 
 ## How to use it
@@ -26,22 +23,23 @@ a template for your new repository.
 List the dependencies in the files `dependencies-apt.txt` and
 `dependencies-py3.txt` (apt packages and pip packages respectively).
 
+List duckietown Python dependencies in the file `dependencies-py3.dt.txt`.
 
-### 4. Place your code
-
-Place your code in the directory `/packages/` of
-your new repository.
+List \compose\ packages to install in the file `dependencies-compose.txt`.
 
 
-### 5. Setup launchers
+### 4. Build and Run
 
-The directory `/launchers` can contain as many launchers (launching scripts)
-as you want. A default launcher called `default.sh` must always be present.
+Use the traditional devel tools to build and run this project.
 
-If you create an executable script (i.e., a file with a valid shebang statement)
-a launcher will be created for it. For example, the script file 
-`/launchers/my-launcher.sh` will be available inside the Docker image as the binary
-`dt-launcher-my-launcher`.
+#### Build
 
-When launching a new container, you can simply provide `dt-launcher-my-launcher` as
-command.
+```shell
+dts devel build
+```
+
+#### Run
+
+```shell
+dts devel run [options]
+```
