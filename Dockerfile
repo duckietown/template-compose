@@ -78,11 +78,13 @@ RUN dt-pip3-install "${PROJECT_PATH}/dependencies-py3.*"
 
 # switch to simple user
 USER www-data
+USER ${DT_USER_NAME}
 
 # install compose dependencies
 COPY ./dependencies-compose.txt "${PROJECT_PATH}/"
 RUN python3 ${COMPOSE_DIR}/public_html/system/lib/python/compose/package_manager.py \
   --install $(awk -F: '/^[^#]/ { print $1 }' ${PROJECT_PATH}/dependencies-compose.txt | uniq)
+RUN dt-compose-install ${PROJECT_PATH}/dependencies-compose.txt
 
 # switch back to root
 USER root
@@ -128,7 +130,7 @@ LABEL \
 # <==================================================
 
 # switch to simple user
-USER www-data
+USER ${DT_USER_NAME}
 
 # configure \compose\
 #RUN python3 ${COMPOSE_DIR}/configure.py \
